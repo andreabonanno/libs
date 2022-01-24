@@ -4930,6 +4930,9 @@ int f_sys_io_uring_setup_x (struct event_filler_arguments *args)
 #endif
 
 	int64_t retval = (int64_t)syscall_get_return_value(current, args->regs);
+	res = val_to_ring(args, retval, 0, false, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
 
 	/* entries */
 	syscall_get_arguments_deprecated(current, args->regs, 0, 1, &val);
@@ -4996,6 +4999,86 @@ int f_sys_io_uring_setup_x (struct event_filler_arguments *args)
 	 * Already converted in ppm portable representation
 	 */
 	res = val_to_ring(args, features, 0, true, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	return add_sentinel(args);
+}
+
+int f_sys_io_uring_enter_x (struct event_filler_arguments *args)
+{
+	int res;
+	unsigned long val;
+
+	int64_t retval = (int64_t)syscall_get_return_value(current, args->regs);
+	res = val_to_ring(args, retval, 0, false, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	/* fd */
+	syscall_get_arguments_deprecated(current, args->regs, 0, 1, &val);
+	res = val_to_ring(args, val, 0, true, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	/* to_submit */
+	syscall_get_arguments_deprecated(current, args->regs, 1, 1, &val);
+	res = val_to_ring(args, val, 0, true, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	/* min_complete */
+	syscall_get_arguments_deprecated(current, args->regs, 2, 1, &val);
+	res = val_to_ring(args, val, 0, true, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	/* flags */
+	syscall_get_arguments_deprecated(current, args->regs, 3, 1, &val);
+	res = val_to_ring(args, io_uring_enter_flags_to_scap(val), 0, true, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	/* sig */
+	syscall_get_arguments_deprecated(current, args->regs, 4, 1, &val);
+	res = val_to_ring(args, val, 0, true, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	return add_sentinel(args);
+}
+
+int f_sys_io_uring_register_x (struct event_filler_arguments *args)
+{
+	int res;
+	unsigned long val;
+
+	int64_t retval = (int64_t)syscall_get_return_value(current, args->regs);
+	res = val_to_ring(args, retval, 0, false, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	/* fd */
+	syscall_get_arguments_deprecated(current, args->regs, 0, 1, &val);
+	res = val_to_ring(args, val, 0, true, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	/* opcode */
+	syscall_get_arguments_deprecated(current, args->regs, 1, 1, &val);
+	res = val_to_ring(args, io_uring_register_opcodes_to_scap(val) , 0 , true, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	/* arg */
+	syscall_get_arguments_deprecated(current, args->regs, 2, 1, &val);
+	res = val_to_ring(args, val, 0, true, 0);
+	if (unlikely(res != PPM_SUCCESS))
+		return res;
+
+	/* nr_args */
+	syscall_get_arguments_deprecated(current, args->regs, 3, 1, &val);
+	res = val_to_ring(args, val, 0, true, 0);
 	if (unlikely(res != PPM_SUCCESS))
 		return res;
 
